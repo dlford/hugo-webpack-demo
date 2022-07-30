@@ -1,0 +1,27 @@
+{
+  "name": "hugo-webpack-demo",
+  "version": "1.0.0",
+  "description": "See https://www.dlford.io/hugo-webpack-fast-websites-part-1/",
+  "main": "index.js",
+  "scripts": {
+    "drafts": "hugo-extended list drafts",
+    "build": "npm run hugo:build",
+    "start": "npm run hugo:start",
+    "hugo:build": "hugo-extended -d build --cleanDestinationDir --gc --printPathWarnings --printUnusedTemplates --templateMetricsHints --minify --verbose",
+    "hugo:start": "hugo-extended -p 3001 server -D --cleanDestinationDir --gc --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dlford/hugo-webpack-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dlford/hugo-webpack-demo/issues"
+  },
+  "homepage": "https://github.com/dlford/hugo-webpack-demo#readme",
+  "dependencies": {
+    "hugo-extended": "^0.101.0"
+  }
+}
