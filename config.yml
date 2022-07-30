@@ -1,0 +1,100 @@
+# hostname (and path) to the root
+baseURL: 'https://www.yourdomain.com'
+
+# Custom parameters
+params:
+  description: 'My New Blog'
+
+# Markdown Settings
+markup:
+  tableOfContents:
+    endLevel: 6
+  highlight:
+    guessSyntax: true
+    noClasses: true
+    tabWidth: 2
+
+# Get last modified date automatically from git
+enableGitInfo: true
+frontmatter:
+  date:
+    - date
+    - lastmod
+  lastmod:
+    - :git
+    - updated
+    - lastmod
+    - date
+  publishDate:
+    - date
+  expiryDate:
+    - expires
+    - exiryDate
+
+# Caches
+caches:
+  getjson:
+    maxAge: '5m'
+
+# The language code for the site
+languageCode: 'en-us'
+
+# Site title
+title: 'My New Blog'
+copyright: 'My Name'
+
+# Build timeout, may need to increase if using a lot of image processing
+timeout: 10m
+
+# Image processing defaults
+image:
+  bgColor: '#011'
+  quality: 60
+  resampleFilter: Lanczos
+
+# Permalinks overrides
+# See "content-management/permalinks"
+# This removes `/blog` from the URL for pages under /blog
+permalinks:
+  blog: /:filename/
+
+# We don't want to make all URLs absolute (in links/etc)
+# This will break React pre-rendered pages later on if it
+# is enabled.
+canonifyURLs: false
+
+# Allows you to disable all page types and will render nothing related to 'kind';
+# values = "page", "home", "section", "taxonomy", "taxonomyTerm", "RSS", "sitemap", "robotsTXT", "404"
+disableKinds: ['hugoGeneratorInject', '404']
+
+# Content organization
+taxonomies:
+  category: categories
+  tag: tags
+
+# Files to ignore while rendering
+ignoreFiles: []
+
+# the length of text to show in a .Summary
+summaryLength: 70
+
+# Pagination
+paginate: 9
+# If you add a value here it will put that between the
+# path and page number (e.g. `/blog/2` as is, or add `page` to make it `/blog/page/2`)
+paginatePath: ''
+
+# Markdown Options
+blackfriday:
+  fractions: false
+
+# Static
+module:
+  mounts:
+    - source: static
+      target: static
+    - source: assets
+      target: assets
+    - source: assets
+      target: static
+
