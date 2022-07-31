@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="X-UA-Compatible"
+      content="IE=edge,chrome=1"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <meta
+      name="HandheldFriendly"
+      content="true"
+    />
+
+    <!--
+      This lets us add `noIndex: true` to the frontmatter of
+      a markdown page and have it be ignored by search crawlers
+    -->
+    {{ if .Params.noIndex }}
+    <meta
+      name="ROBOTS"
+      content="NOINDEX, NOFOLLOW"
+    />
+    {{ end }}
+
+    <!-- We can override the title in a template, but this is a good default -->
+    {{ block "title" . }}
+    <title
+      >{{ if not .IsHome }} {{ .Title }} | {{ end }}{{ .Site.Title
+      }}</title
+    >
+    {{ end }}
+
+    <!-- Here is another block we can override later -->
+    {{ block "description" . }}
+    <!-- We are using the Hugo generated page summary for meta description -->
+    <meta
+      name="description"
+      content="{{ .Summary }}"
+    />
+    {{ end }}
+
+    <!-- This empty block lets us add to the document head in another template -->
+    {{ block "head" . }} {{ end }}
+
+    <!-- Sitemap is generated automatically -->
+    <link
+      rel="sitemap"
+      type="application/xml"
+      href="/sitemap.xml"
+    />
+  </head>
+
+  <!-- This body class is helpful in figuring out which template is being loaded -->
+  <body
+    class="type-{{ .Type }}
+    {{ if .IsPage }}
+      page-single
+    {{ else }}
+      page-list
+    {{ end }}"
+  >
+    <!-- This block is for the main page content -->
+    {{ block "main" . }}
+    <article>
+      <!--
+        Another frontmatter field `noTitle: true` prevents
+        the page title from showing up here
+      -->
+      {{ if not .Params.noTitle }}
+      <header>
+        <h1>{{ .Title | htmlUnescape }}</h1>
+      </header>
+      {{ end }}
+
+      <main id="main">
+        <!-- This is the markdown file content -->
+        {{ .Content }}
+      </main>
+    </article>
+    {{ end }}
+  </body>
+</html>
+
