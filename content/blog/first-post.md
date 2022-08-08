@@ -1,7 +1,7 @@
 ---
 draft: true
-title: ""
-description: ""
+title: "First Post"
+description: "My first post"
 date: "2022-07-29"
 categories:
   - Posts

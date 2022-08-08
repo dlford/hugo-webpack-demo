@@ -1,0 +1,22 @@
+{{ define "main" }}
+  <main id="main">
+    <section class="terms">
+      <header>
+        <h1>{{ .Title }}</h1>
+      </header>
+
+      <ul>
+        {{ range $name, $taxonomy := .Data.Terms }}
+          <li>
+            <a
+              href="{{ (print "/" $.Data.Plural "/" (lower $name)) | relURL }}"
+            >
+              {{ $name | humanize | title }}
+            </a>
+          </li>
+        {{ end }}
+      </ul>
+    </section>
+  </main>
+{{ end }}
+
