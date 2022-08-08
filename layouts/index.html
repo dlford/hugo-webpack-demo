@@ -1,9 +1,9 @@
 {{ define "main" }}
 <article>
-  <!--
-      Another frontmatter field `noTitle: true` prevents
-      the page title from showing up here
-    -->
+  {{/*
+    Another frontmatter field `noTitle: true` prevents
+    the page title from showing up here
+  */}}
   {{ if not .Params.noTitle }}
   <header>
     <h1>{{ .Title | htmlUnescape }}</h1>
@@ -11,9 +11,8 @@
   {{ end }}
 
   <main id="main">
-    <!-- This is the markdown file content -->
+    {{/* This is the markdown file content */}}
     {{ .Content }}
   </main>
 </article>
 {{ end }}
-
