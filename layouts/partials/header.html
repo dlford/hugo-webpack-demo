@@ -1,0 +1,13 @@
+<header class="site-header">
+  <nav class="main-nav">
+    <ul class="nav-list">
+      {{/* Loop through all nav items */}}
+      {{ range site.Data.nav }}
+        <li class="nav-item">
+          {{/* .url and .title are coming from the nav.yml file */}}
+          <a href="{{ .url }}">{{ .title }}</a>
+        </li>
+      {{ end }}
+    </ul>
+  </nav>
+</header>

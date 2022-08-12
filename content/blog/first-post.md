@@ -14,3 +14,7 @@ tags:
 # My first post
 
 Wow! Look at that!
+
+{{<introduction name="Bob">}}
+Yep, that's my name
+{{</introduction>}}
