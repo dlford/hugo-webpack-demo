@@ -61,6 +61,12 @@
       type="application/xml"
       href="/sitemap.xml"
     />
+
+    {{ $globalStyles := resources.Get "global.css" }}
+    <link
+      rel="stylesheet"
+      href="{{ $globalStyles.RelPermalink }}"
+    />
   </head>
 
   {{/*
