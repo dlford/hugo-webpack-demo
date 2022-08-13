@@ -1,0 +1,31 @@
+## Node
+node_modules
+.eslintcache
+.stylelintcache
+
+## OS X
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+## Hugo
+build
+resources
+public
+.hugo_build.lock
+
+## Dynamic data
+assets/generated
+data/generated
+src/generated
+.rsp.json
+
+## Env
+.env
+
+## Netlify
+lambda-dist
+
+## gitkeep
+!**/.gitkeep

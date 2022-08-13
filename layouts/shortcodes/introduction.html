@@ -1,0 +1,12 @@
+{{/* Check for the "name" parameter, or use "Anonymous" */}}
+{{ $name := default "Anonymous" (.Get "name") }}
+
+<div class="introduction">
+  {{ with $name }}
+    <h2>Hello, my name is {{ . }}!</h2>
+  {{ end }}
+  {{/* .Inner is the text passed inside the shortcode */}}
+  {{ with .Inner }}
+    <p>{{ . }}</p>
+  {{ end }}
+</div>

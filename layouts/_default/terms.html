@@ -1,0 +1,31 @@
+{{ define "main" }}
+  <main id="main">
+    <section class="terms">
+
+      <header>
+        {{/* this will be our taxonomy name, e.g. categories */}}
+        <h1>{{ .Title }}</h1>
+      </header>
+
+      <ul>
+        {{/* Loop over each term */}}
+        {{ range $name, $taxonomy := .Data.Terms }}
+          <li>
+            {{/* Here we are getting the URL to that terms list page */}}
+            <a
+              href="{{ (print "/" $.Data.Plural "/" (lower $name)) | relURL }}"
+            >
+              {{/*
+                Terms are saved in camel-case, so we are using Hugo's `humanize`
+                function to convert it back to human readable, and the `title`
+                function to capitalize each word
+              */}}
+              {{ $name | humanize | title }}
+            </a>
+          </li>
+        {{ end }}
+      </ul>
+
+    </section>
+  </main>
+{{ end }}

@@ -1,0 +1,63 @@
+{{ define "main" }}
+  <main id="main">
+    <section>
+      {{ if not .Params.noTitle }}
+      <header>
+        <h1>{{ .Title | htmlUnescape }}</h1>
+      </header>
+      {{ end }}
+
+      {{/*
+        `Scratch` is like a global variable store
+        for Hugo, anything you put into it is available
+        anywhere on the site. Here we set up a variable
+        for the total page count
+      */}}
+      {{- $.Scratch.Set "pagecount" 0 -}}
+
+      {{/*
+        Hugo has built-in functions for pagination, we are
+        setting a local variable `paginate` to the result of
+        the paginate function `.Paginate`, to which we pass
+        in all the pages for this content type `.Pages`.
+      */}}
+      {{ $paginate := .Paginate .Pages }}
+
+      {{/*
+        Now we will loop over the pages in the paginate variable
+      */}}
+      {{ range $paginate.Pages }}
+
+        {{/*
+          We are setting the page count to the current page count
+          plus one.
+        */}}
+        {{- $.Scratch.Set "pagecount" (add ($.Scratch.Get "pagecount") 1) -}}
+
+        {{/*
+          Now we need to show each posts info and link to it.
+        */}}
+        <article>
+          <header>
+            <h3>
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            </h3>
+            <time datetime="{{ .PublishDate }}" pubdate>{{ .PublishDate.Format "January 2, 2006" }}</time>
+          </header>
+          {{ .Summary }}
+        </article>
+      {{ end }}
+
+      {{/*
+        We will now show the pagination links, if there are any.
+      */}}
+      {{ if gt $paginate.TotalPages 1  }}
+        <nav>
+          {{ if $paginate.HasPrev }}<a href="{{ $paginate.Prev.URL }}">&larr; Newer</a>{{ end }}
+          {{ if and $paginate.HasPrev $paginate.HasNext }}&nbsp;/&nbsp;{{ end }}
+          {{ if $paginate.HasNext }}<a href="{{ $paginate.Next.URL }}">Older &rarr;</a>{{ end }}
+        </nav>
+      {{ end }}
+
+  </main>
+{{ end }}

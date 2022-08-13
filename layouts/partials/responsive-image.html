@@ -1,0 +1,198 @@
+{{/* Filename and path of an image */}}
+{{ $filename := .filename }}
+
+{{/* Image alt text */}}
+{{ $altText := default "" .altText }}
+
+{{/* Optional class name for the outer image wrapper */}}
+{{ $classname := default "" .classname }}
+
+{{/* Image sizes, this will go to the actual `img` element */}}
+{{ $sizes := default "100vw" .sizes }}
+
+{{/*
+  Image widths, these are the different widths the image
+  will be copied down to for different devices.
+*/}}
+{{ $widths := default (slice 1920 1440 1024 640 480 375) .widths }}
+
+{{/* Disable link to original full-size image */}}
+{{ $nolink := or .nolink false }}
+
+{{/*
+  If true, look for the image in the `assets` directory
+  otherwise look for the image relative to the current file.
+*/}}
+{{ $isAsset := or .isAsset false }}
+
+{{/* Optional maximum width of the image to be displayed */}}
+{{ $maxwidth := default (index $widths 0) .maxwidth }}
+{{ $maxwidth = int $maxwidth }}
+
+{{/* Create a local scratch variable */}}
+{{ $asset := newScratch }}
+
+{{/* Find the image file */}}
+{{ if $isAsset }}
+  {{ $asset.Set "resource" (resources.Get $filename | fingerprint) }}
+{{ else }}
+  {{ with site.GetPage "page" (printf "%s" .page) }}
+    {{ with .Resources.GetMatch $filename }}
+      {{ $asset.Set "resource" (. | fingerprint) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/* Create the image element */}}
+{{ $img := $asset.Get "resource" }}
+{{ $imageId := printf "img-%s" (md5 $img.RelPermalink) }}
+{{ with $img }}
+  {{ $minImageSize := index (last 1 $widths) 0 }}
+
+  {{/*
+    The outer element will be an anchor tag by default,
+    or a div if the nolink option is set.
+  */}}
+  {{ $wrapper := newScratch }}
+  {{ $wrapper.Set "open" (printf `
+    <a
+    class="responsive-image %s"
+    href="%s"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Open Image: %s"
+    >` $classname $img.RelPermalink $altText | safeHTML)
+  }}
+  {{ $wrapper.Set "close" (`</a>` | safeHTML) }}
+  {{ if eq $altText "" }}
+    {{ $wrapper.Set "open" (printf `
+      <a
+      class="responsive-image %s"
+      href="%s"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-hidden="true"
+      >` $classname $img.RelPermalink | safeHTML)
+    }}
+  {{ end }}
+  {{ if $nolink }}
+    {{ $wrapper.Set "open" (printf `
+      <div
+      class="responsive-image %s"
+      >` $classname | safeHTML)
+    }}
+    {{ $wrapper.Set "close" (`</div>` | safeHTML) }}
+  {{ end }}
+
+  {{/* If the image is an SVG, just render it as is */}}
+  {{ if eq $img.MediaType.SubType "svg" }}
+    {{ $wrapper.Get "open" }}      <style>
+        #{{ $imageId }} {
+          max-width: {{ $maxwidth }};
+          width: 100%;
+        }
+      </style>
+    <img
+      id="{{ $imageId }}"
+      src="{{ $img.RelPermalink }}"
+      alt="{{ $altText }}"
+      loading="lazy"
+      {{ if eq $altText "" }}
+        aria-hidden="true"
+      {{ end }}
+    />
+    {{ $wrapper.Get "close" }}
+  {{ else }}
+    {{/* Create a low res copy for initial page load */}}
+    {{ $blurred := $img.Resize "10x q10" }}
+
+    {{/* Apply the outer wrapper element */}}
+    {{ $wrapper.Get "open" }}
+
+    {{/*
+      If the image is a GIF, render it without sizes
+      because changing the size will break the animation.
+    */}}
+    {{ if eq $img.MediaType.SubType "gif" }}
+        <style>
+          #{{ $imageId }} {
+            aspect-ratio: {{ $img.Width }} / {{ $img.Height }};
+            max-width: {{ math.Min $img.Width $maxwidth }}px;
+            object-fit: cover;
+            object-position: center;
+            width: 100%;
+          }
+        </style>
+      <img
+        id="{{ $imageId }}"
+        src="{{ ($blurred.Resize (printf "%sx" (string $img.Width))).RelPermalink }}"
+        data-lazy-src="{{ $img.RelPermalink }}"
+        alt="{{ $altText }}"
+        loading="lazy"
+        {{ if eq $altText "" }}
+          aria-hidden="true"
+        {{ end }}
+      />
+    {{ else }}
+      {{/*
+        Finally, render a picture element with sources for
+        webp and jpeg formats.
+      */}}
+      <style>
+        #{{ $imageId }} {
+          aspect-ratio: {{ $img.Width }} / {{ $img.Height }};
+          max-width: {{ math.Min $maxwidth $img.Width }}px;
+          width: 100%;
+          object-fit: cover;
+          object-position: center;
+        }
+      </style>
+      <picture>
+        <source
+          type="image/webp"
+          srcset="
+            {{ range $index, $width := $widths }}
+              {{ $lineEnd := cond (eq (add $index 1) (len $widths)) "" "," }}
+              {{ ($blurred.Resize (printf "%dx webp" $width)).RelPermalink }}
+              {{ printf "%dw" $width }}{{ $lineEnd }}
+            {{ end }}
+          "
+          data-lazy-srcset="
+              {{ range $index, $width := $widths }}
+            {{ $lineEnd := cond (eq (add $index 1) (len $widths)) "" "," }}
+            {{ ($img.Resize (printf "%dx webp" $width)).RelPermalink }}
+            {{ printf "%dw" $width }}{{ $lineEnd }}
+          {{ end }}
+            "
+        />
+        <img
+          id="{{ $imageId }}"
+          srcset="
+            {{ range $index, $width := $widths }}
+              {{ $lineEnd := cond (eq (add $index 1) (len $widths)) "" "," }}
+              {{ ($blurred.Resize (printf "%dx" $width)).RelPermalink }}
+              {{ printf "%dw" $width }}{{ $lineEnd }}
+            {{ end }}
+          "
+          data-lazy-srcset="
+              {{ range $index, $width := $widths }}
+            {{ $lineEnd := cond (eq (add $index 1) (len $widths)) "" "," }}
+            {{ ($img.Resize (printf "%dx" $width)).RelPermalink }}
+            {{ printf "%dw" $width }}{{ $lineEnd }}
+          {{ end }}
+            "
+          src="{{ ($blurred.Resize (printf "%dx" $minImageSize)).RelPermalink }}"
+          data-lazy-src="{{ ($img.Resize (printf "%dx" $minImageSize)).RelPermalink }}"
+          sizes="{{ $sizes }}"
+          alt="{{ $altText }}"
+          {{ if eq $altText "" }}
+            aria-hidden="true"
+          {{ end }}
+        />
+      </picture>
+    {{ end }}
+    {{ $wrapper.Get "close" }}
+  {{ end }}
+{{ else }}
+  <p>could not find image</p>
+{{ end }}

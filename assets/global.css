@@ -1,0 +1,26 @@
+body {
+  display: flex;
+  flex-direction: column;
+  width: 64rem;
+  padding: 0 2rem;
+  max-width: calc(100% - 4rem);
+  margin: 0 auto;
+  background-color: #232c34;
+  color: lightgray;
+}
+
+.site-header {
+  padding: 0.5rem 0;
+}
+
+.site-header .nav-list {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+a {
+  color: orange;
+}
