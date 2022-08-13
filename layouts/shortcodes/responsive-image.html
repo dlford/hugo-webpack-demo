@@ -1,0 +1,29 @@
+{{/*
+  We are using a different set of default widths here
+  because the shortcode will mostly be used in content,
+  so the widths are more appropriate for that context.
+*/}}
+{{ $widths := default (slice 768 640 480 375) (.Get "widths") }}
+{{ $sizes := default "(min-width: 768px) 768px, 100vw" (.Get "sizes") }}
+{{ $maxwidth := default (index $widths 0) (.Get "maxwidth") }}
+
+{{/*
+  Here we can pass all of our variables in a dict,
+  this first thing we pass in is "context" with a 
+  value of ".", which is the current context.
+*/}}
+{{ partial "responsive-image"
+  (dict
+    "context" .
+    "filename" (.Get "filename")
+    "altText" (.Get "alt")
+    "classname" (default nil (.Get "classname"))
+    "sizes" $sizes
+    "widths" $widths
+    "nolink" (default false (.Get "nolink"))
+    "isAsset" (default false (.Get "isAsset"))
+    "maxwidth" (int $maxwidth)
+    "page" ($.Page.File.Path)
+  )
+}}
+

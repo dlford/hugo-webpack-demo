@@ -85,5 +85,8 @@
 
     {{/* This block is for the main page content */}}
     {{ block "main" . }} {{ end }}
+
+    {{ $lazyScript := resources.Get "lazyload.js" }}
+    <script async defer src="{{ $lazyScript.RelPermalink }}"></script>
   </body>
 </html>
