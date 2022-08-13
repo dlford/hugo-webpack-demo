@@ -1,3 +1,3 @@
 ## Hugo Webpack Demo
 
-See https://www.dlford.io/hugo-webpack-fast-websites-part-1/
+Demo code for my Hugo and Webpack series, see https://www.dlford.io/series/hugo-and-webpack/
