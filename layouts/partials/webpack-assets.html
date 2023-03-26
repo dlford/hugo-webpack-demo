@@ -98,9 +98,6 @@
     {{ else }}
       {{ with resources.Get (printf "generated/%s" .filename) }}
         {{ $fileRaw := readFile (printf "assets/%s" .) }}
-        {{ if findRE "BUILD_VAR_PAGE_HAS_JSX" $fileRaw }}
-          {{ $context.Scratch.Set "hasJSX" true }}
-        {{ end }}
         {{ $link := . | resources.Fingerprint "sha512" }}
         {{ if $isCritical }}
           <link
@@ -109,7 +106,7 @@
             href="{{ $link.RelPermalink }}"
           />
         {{ end }}
-        <script {{ if ($context.Scratch.Get "hasJSX") -}}data-has-jsx{{ end }}
+        <script
           {{ if not $isCritical }}async defer{{ end }}
           type="text/javascript"
           src="{{ $link.RelPermalink }}"
