@@ -5,10 +5,13 @@
   "main": "index.js",
   "scripts": {
     "drafts": "hugo-extended list drafts",
+    "start": "concurrently \"npm run webpack:dev\" \"npm run hugo:start\"",
+    "prebuild": "npm run browsers:update && npm run webpack:build",
     "build": "npm run hugo:build",
-    "start": "npm run hugo:start",
     "hugo:build": "hugo-extended -d build --cleanDestinationDir --gc --printPathWarnings --printUnusedTemplates --templateMetricsHints --minify --verbose",
-    "hugo:start": "hugo-extended -p 3001 server -D --cleanDestinationDir --gc --verbose"
+    "hugo:start": "hugo-extended -p 3001 server -D --cleanDestinationDir --gc --verbose",
+    "webpack:dev": "webpack-dev-server --client-logging warn",
+    "webpack:build": "webpack --env production"
   },
   "repository": {
     "type": "git",
