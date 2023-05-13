@@ -1,0 +1,153 @@
+{{/* Pass context from parent */}}
+{{ $context := .context }}
+
+{{/* Critical CSS/JS get different attributes, so we need to pass in `isCritical` */}}
+{{ $isCritical := .isCritical }}
+
+{{/* Asset type is either CSS or JS */}}
+{{ $assetType := .assetType }}
+
+{{/* All asset files will match one of these queries */}}
+{{ $assetQueries := slice
+  (
+  dict
+  "filename" (printf "kind/%s/%s/critical.min.css" $context.Kind $context.Type)
+  "type" "css"
+  "critical" true
+  )
+  (
+  dict
+  "filename" (printf "path%scritical.min.css" $context.RelPermalink)
+  "type" "css"
+  "critical" true
+  )
+  (
+  dict
+  "filename" (printf "kind/%s/%s/critical.js" $context.Kind $context.Type)
+  "type" "js"
+  "critical" true
+  )
+  (
+  dict
+  "filename" (printf "path%scritical.js" $context.RelPermalink)
+  "type" "js"
+  "critical" true
+  )
+  (
+  dict
+  "filename" (printf "kind/%s/%s/main.min.css" $context.Kind $context.Type)
+  "type" "css"
+  "critical" false
+  )
+  (
+  dict
+  "filename" (printf "path%smain.min.css" $context.RelPermalink)
+  "type" "css"
+  "critical" false
+  )
+  (
+  dict
+  "filename" (printf "kind/%s/%s/main.js" $context.Kind $context.Type)
+  "type" "js"
+  "critical" false
+  )
+  (
+  dict
+  "filename" (printf "path%smain.js" $context.RelPermalink)
+  "type" "js"
+  "critical" false
+  )
+}}
+
+{{/* In development mode, add meta tags to show the queries for this page */}}
+{{/* You can view these meta tags in browser to see which assets are called for this page */}}
+{{ if and (not hugo.IsProduction) $isCritical }}
+  <meta
+    name="asset_query_kind"
+    content="kind/{{ $context.Kind }}/{{ $context.Type }}/[main|critical].[css|js]"
+  />
+  <meta
+    name="asset_query_path"
+    content="path{{ $context.RelPermalink }}[main|critical].[css|js]"
+  />
+{{ end }}
+
+{{/* Here we add link and script tags for each asset, in production mode */}}
+{{/* we check if the file exists first, in development mode we just put */}}
+{{/* them all in and if they do not exist they will get ignored. */}}
+
+{{ if hugo.IsProduction }}
+  {{/* Production Builds */}}
+  {{/* Here we look for the files in `assets/generated` */}}
+  {{ range where (where $assetQueries "critical" $isCritical) "type" $assetType }}
+    {{ if eq .type "css" }}
+      {{ with resources.Get (printf "generated/%s" .filename) }}
+        {{ $link := . | resources.Fingerprint "sha512" }}
+        {{ if $isCritical }}
+          <link
+            rel="preload"
+            as="style"
+            href="{{ $link.RelPermalink }}"
+          />
+        {{ end }}
+        <link
+          rel="stylesheet"
+          href="{{ $link.RelPermalink }}"
+        />
+      {{ end }}
+    {{ else }}
+      {{ with resources.Get (printf "generated/%s" .filename) }}
+        {{ $fileRaw := readFile (printf "assets/%s" .) }}
+        {{ $link := . | resources.Fingerprint "sha512" }}
+        {{ if $isCritical }}
+          <link
+            rel="preload"
+            as="script"
+            href="{{ $link.RelPermalink }}"
+          />
+        {{ end }}
+        <script
+          {{ if not $isCritical }}async defer{{ end }}
+          type="text/javascript"
+          src="{{ $link.RelPermalink }}"
+        ></script>
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{/* Development Builds */}}
+  {{/* Here we use the URL from Webpack dev server */}}
+  {{ range where (where $assetQueries "critical" $isCritical) "type" $assetType }}
+    {{ $url := printf "/%s" .filename }}
+    {{ if eq .type "css" }}
+      {{ if $isCritical }}
+        <link
+          rel="preload"
+          as="style"
+          href="{{ $url }}"
+          onerror="this.remove();"
+        />
+      {{ end }}
+      <link
+        rel="stylesheet"
+        href="{{ $url }}"
+        onerror="this.remove();"
+      />
+    {{ else }}
+      {{ if $isCritical }}
+        <link
+          rel="preload"
+          as="script"
+          href="{{ $url }}"
+          onerror="this.remove();"
+        />
+      {{ end }}
+        <script
+          {{ if not $isCritical }}async defer{{ end }}
+          type="text/javascript"
+          src="{{ $url }}"
+          onerror="this.remove();"
+        ></script>
+    {{ end }}
+  {{ end }}
+{{ end }}

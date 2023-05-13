@@ -5,10 +5,14 @@
   "main": "index.js",
   "scripts": {
     "drafts": "hugo-extended list drafts",
+    "start": "concurrently \"npm run webpack:dev\" \"npm run hugo:start\"",
     "build": "npm run hugo:build",
-    "start": "npm run hugo:start",
+    "prebuild": "npm run browsers:update && npm run webpack:build",
+    "browsers:update": "npx browserslist@latest --update-db",
     "hugo:build": "hugo-extended -d build --cleanDestinationDir --gc --printPathWarnings --printUnusedTemplates --templateMetricsHints --minify --verbose",
-    "hugo:start": "hugo-extended -p 3001 server -D --cleanDestinationDir --gc --verbose"
+    "hugo:start": "hugo-extended -p 3001 server -D --cleanDestinationDir --gc --verbose",
+    "webpack:dev": "webpack-dev-server --client-logging warn",
+    "webpack:build": "webpack --env production"
   },
   "repository": {
     "type": "git",
@@ -22,6 +26,33 @@
   },
   "homepage": "https://github.com/dlford/hugo-webpack-demo#readme",
   "dependencies": {
-    "hugo-extended": "^0.101.0"
+    "@babel/cli": "^7.21.0",
+    "@babel/core": "^7.21.3",
+    "@babel/plugin-transform-runtime": "^7.21.0",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/runtime": "^7.21.0",
+    "autoprefixer": "^10.4.14",
+    "babel-loader": "^9.1.2",
+    "concurrently": "^7.6.0",
+    "css-loader": "^6.7.3",
+    "dotenv": "^16.0.3",
+    "file-loader": "^6.2.0",
+    "html-loader": "^4.2.0",
+    "hugo-extended": "^0.101.0",
+    "mini-css-extract-plugin": "^2.7.5",
+    "postcss-cli": "^10.1.0",
+    "postcss-loader": "^7.1.0",
+    "postcss-nested": "^6.0.1",
+    "postcss-normalize": "^10.0.1",
+    "postcss-preset-env": "^8.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sass": "^1.60.0",
+    "sass-loader": "^13.2.1",
+    "webpack": "^5.76.3",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.1",
+    "yaml-loader": "^0.8.0"
   }
 }

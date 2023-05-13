@@ -1,5 +1,4 @@
 ---
-draft: true
 title: "First Post"
 description: "My first post"
 date: "2022-07-29"

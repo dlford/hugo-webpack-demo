@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ .Site.LanguageCode }}">
   <head>
+    {{/* Cricital CSS & JS Bundles */}}
+    {{ partial "webpack-assets" (dict "context" . "isCritical" true "assetType" "css") }}
+    {{ partial "webpack-assets" (dict "context" . "isCritical" true "assetType" "js") }}
+
     <meta charset="utf-8" />
     <meta
       http-equiv="X-UA-Compatible"
@@ -62,11 +66,8 @@
       href="/sitemap.xml"
     />
 
-    {{ $globalStyles := resources.Get "global.css" }}
-    <link
-      rel="stylesheet"
-      href="{{ $globalStyles.RelPermalink }}"
-    />
+    {{/* Non-critical CSS Bundles go at the end of `head` */}}
+    {{ partial "webpack-assets" (dict "context" . "isCritical" false "assetType" "css") }}
   </head>
 
   {{/*
@@ -86,7 +87,7 @@
     {{/* This block is for the main page content */}}
     {{ block "main" . }} {{ end }}
 
-    {{ $lazyScript := resources.Get "lazyload.js" }}
-    <script async defer src="{{ $lazyScript.RelPermalink }}"></script>
+    {{/* Non-critical JS Bundles go at the end of `body` */}}
+    {{ partial "webpack-assets" (dict "context" . "isCritical" false "assetType" "js") }}
   </body>
 </html>
